@@ -23,9 +23,10 @@ You'll need Python 3.7.2 and a command line interface.
 3) Type "python Gacha_RPG.py" or "python3 Gacha_RPG.py"
 4) Have fun!
 
-## Versioning
+## Versions
 
 Version 0.1 - 5/13/19
+Version 0.2 - 5/14/19
 
 ## Author
 
@@ -34,6 +35,6 @@ Josh Cabrera (https://github.com/joshcabrera)
 ## License
 
 This project is licensed under the MIT License - 
-see the [LICENSE.md](LICENSE.md) file for details
+see the LICENSE file for details
 
 
