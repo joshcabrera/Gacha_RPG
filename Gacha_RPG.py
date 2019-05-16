@@ -1,23 +1,33 @@
 import time, random
 
-#PlayerObject
 class Player:
         def poptoons_list(self):
-                for toon in self.toons:
+                self.toons_list = []
+                for name,toon in self.toons.items():
                         self.toons_list.append(toon.name)
         def __init__(self, name):
                 self.name = name
-                self.toons = [Bob()]
-                self.toons_list = []
+                self.toons = {
+                        "Bob":Bob()
+                }
+                self.toons_list = [] 
                 self.inventory = []
                 self.currency = 0
                 self.squad = []
-                self.state = "menu" #could be battle or squad
-                self.menu = "menu" #could fight, squad, or quit
                 self.poptoons_list()
         
-
-#Starter Toon
+class EnemyPlayer:
+        def spawnMonsters(self, integer):
+                for i in range(integer):
+                        self.squad.append(random.choice(list(self.toons.values())))
+        def clearSquad(self):
+                self.squad = []
+        def __init__(self):
+                self.toons = {
+                        "Monster1":Monster1("George")
+                }
+                self.squad = []
+        
 class Bob:
         def __init__(self):
                 self.name = "Bob"
@@ -53,7 +63,6 @@ class Monster1:
                 self.attack = 5
                 self.defense = 3
                 self.speed = 100
-
         def punch():
                 return attack
         def kick():
@@ -85,9 +94,9 @@ def mainMenu():
 
 def startBattle():
         newWindow()
-        playerSquad = current_player.squad
         enemySquad = spawnMonsters(2)
-        while playerSquad and enemySquad:
+        while current_player.squad and enemySquad:
+                print("Battle Round")
                 battleRound()
         endBattle()
 
@@ -95,61 +104,61 @@ def endBattle():
         newWindow()
         print("Battle over!")
         enemySquad = []
-        for i in playerSquad:
+        for i in current_player.squad:
                 i.HP = i.HP_max
         mainMenu()
 
 def battleRound():
         newWindow()
-        if not playerSquad or not enemySquad:
-                print("Battle over!")
-        print(playerSquad)
+        # if not playerSquad or not enemySquad: 
+        #         endBattle()
+        # else:
+        print(current_player.squad)
         print(enemySquad)
-        print("Choose an option: \n (1) "+playerSquad[0].actions[0]+ " \
-                (2) "+playerSquad[0].actions[1]) # TODO switch this to a loop
-        print("(3) Run")
+        for i in current_player.squad:
+                print(i)
+                for j in range(len(current_player.toons[i].actions)):
+                        print(current_player.toons[i].actions[j])
 
         choice = input()
         if choice == "1":
-                enemySquad[0].HP -= playerSquad.punch()
+                enemySquad[0].HP -= current_player.toons[current_player.squad[0]].punch()
                 if enemySquad[0].HP <= 0:
                         del enemySquad[0]
                 battleRound()
         elif choice == "2":
-                enemySquad[0].HP -= playerSquad.kick()
+                enemySquad[0].HP -= current_player.toons[current_player.squad[0]].kick()
                 if enemySquad[0].HP <= 0:
                         del enemySquad[0]
                 battleRound()
-        elif choice == "3":
+        elif choice == "run":
                 endBattle()
         else:
                 print("Sorry, please choose another option: ")
                 battleRound()
 
-def spawnMonsters(integer):
-        enemySquad = []
-        for i in range(integer):
-                enemySquad.append(Monster1("Tester"))
-        return enemySquad
-
-def squadManage(): #TODO switch these lists to dictionaries.
+def squadManage():
         newWindow()
         print("Current squad:", end=" ")
         print(current_player.squad)
         print("Available toons:", end=" ")
-        print(current_player.toons_list)    
-        selection = input("Select a hero to add to your squad (type 'reset' to reset, 'end' when done)")
-        if selection == "0":
+        print(current_player.toons_list)
+
+        selection = input("Select a hero to add to your squad\
+                 (type 'reset' to reset, 'end' when done)")
+        if selection == "reset":
                 current_player.squad = []
+                current_player.poptoons_list()
                 squadManage()
         elif selection == "end":
                 current_player.poptoons_list()
                 mainMenu()
-        elif type(selection == int) and selection in range(len(current_player.toons_list)):
-                current_player.squad.append(current_player.toons_list.pop([int(selection)]))
+        elif int(selection) in range(len(current_player.toons_list)) and not current_player.toons_list[int(selection)] in current_player.squad:
+                current_player.squad.append(current_player.toons_list.pop(int(selection)))
+                squadManage()
         else:
                 print("Sorry, try again!")
-        mainMenu()
+                squadManage()
 
 def quitGame():
         newWindow()
@@ -157,7 +166,6 @@ def quitGame():
         print("Goodbye!")
         exit()
 
-playerSquad = []
-enemySquad = []
+enemy = EnemyPlayer()
 current_player = createPlayer()
 mainMenu()
