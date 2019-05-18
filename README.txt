@@ -25,6 +25,8 @@ You'll need Python 3.7.2 and a command line interface.
 
 ## Versions
 
+Version 0.31 - 5/18/19
+    - Battling now has basic functionality.
 Version 0.3 - 5/15/19
     - Squad Management now working for 1 toon/1 squaddie
 Version 0.2 - 5/14/19
