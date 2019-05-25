@@ -14,7 +14,7 @@ deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
-You'll need Python 3.7.2 and a command line interface.
+You'll need Python 3.7.2 and a command line interface. 
 
 ### Installing
 
@@ -25,6 +25,9 @@ You'll need Python 3.7.2 and a command line interface.
 
 ## Versions
 
+Version 0.32 - 5/25/19
+    - Battles are a bit more fun now, featuring slightly
+    random damage and basic enemy AI. 
 Version 0.31 - 5/18/19
     - Battling now has basic functionality.
 Version 0.3 - 5/15/19
