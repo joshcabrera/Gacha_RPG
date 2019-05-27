@@ -25,6 +25,8 @@ You'll need Python 3.7.2 and a command line interface.
 
 ## Versions
 
+Version 0.4 - 5/27/19
+    - Turn order system implemented. 
 Version 0.32 - 5/25/19
     - Battles are a bit more fun now, featuring slightly
     random damage and basic enemy AI. 

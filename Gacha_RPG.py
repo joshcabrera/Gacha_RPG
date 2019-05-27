@@ -1,21 +1,24 @@
 import time, random
 
+class Game:
+        def __init__(self):
+                self.turn = 1000
+
 class Player:
         def poptoons_list(self):
                 self.toons_list = []
                 for name,toon in self.toons.items():
                         self.toons_list.append(toon.name)
         def __init__(self, name):
-                self.name = name      # character name
-                self.toons = {        # dictionary containing toon objects
-                        "Bob":Bob() #starting character
+                self.name = name
+                self.toons = {
+                        "Bob":Bob()
                 }
-                self.toons_list = [] # listen of toons currently owned
+                self.toons_list = [] 
                 self.inventory = [] # unused
-                self.currency = 0 # unused for now. unclear if collecting/spending currency is fun
+                self.currency = 0 # unused
                 self.squad = [] 
                 self.poptoons_list() 
-        
 
 class EnemyPlayer:
         def spawnMonsters(self, integer):
@@ -25,20 +28,6 @@ class EnemyPlayer:
                                 self.squad.append(monster_name)
         def clearSquad(self):
                 self.squad = []
-        def popSquad(self):
-                for i in self.toons.values():
-                        self.squad.append(i)
-        def fight(self):
-                fighter_name = random.choice(list(self.toons.values())).name
-                action = random.randrange(0, len(self.toons[fighter_name].actions))
-                if action == 0:
-                        print("Enemy punch!")
-                        time.sleep(1)
-                        return self.toons[fighter_name].punch()
-                elif action == 1:
-                        print("Enemy kick!")
-                        time.sleep(1)
-                        return self.toons[fighter_name].kick()
         def __init__(self):
                 self.toons = {
                         "George":Monster1("George"), #dictionary of toons
@@ -54,30 +43,68 @@ class Bob:
                 self.name = "Bob"
                 self.level = 1
                 self.EXP = 0
-                self.actions = ["Punch", "Kick"] # list of possible actions
+                self.actions = ["Punch", "Kick", "Run"]
                 #self.status = [] #status effects
-                self.items = [] # items; undecided to tie items to toons or characters
+                self.items = []
                 self.HP = 100
                 self.HP_max = self.HP
                 self.energy_max = 10 #unused
                 self.energy = 10 #unused
-                self.attack_def = 10
+                self.attack_def = 12
                 self.attack = 12 
                 self.defense_def = 5
-                self.defense = 5 #multiplier or flat reduction to damage received?
+                self.defense = 5 
                 self.speed_def = 100
-                self.speed = 100 # unused - how to determine turn order?
-        def punch(self): 
-                return (self.attack + random.randrange(-2, 2))
-        def kick(self):
-                return (self.attack + random.randrange(-3, 3))
+                self.speed = 100
+                self.ATB = 0
+        def target(self):
+                target = input("Choose a target:")
+                if target in enemy.squad:
+                        return enemy.toons[target]
+                else:
+                        print("Target not found!")
+        def fight(self):
+                print(self.name + "'s turn!")
+                print("Options: ", end="")
+                print(self.actions)
+                print("\n")
+                choice = input()
+                if not choice in self.actions:
+                        print("Sorry, select another option.")
+                        self.fight()
+                elif choice == "Punch":
+                        self.punch(self.target())
+                elif choice == "Kick":
+                        self.kick(self.target())
+                elif choice == "Run":
+                        endBattle()
+        def punch(self, target): 
+                try:
+                        target.HP -= (self.attack + random.randrange(-2, 2))
+                        if target.HP <= 0:
+                                for i in range(len(enemy.squad)):
+                                        if enemy.squad[i] == enemy.toons[target.name].name:
+                                                del enemy.squad[i]
+                                                break
+                except AttributeError:
+                        self.punch(self.target())
+        def kick(self, target):
+                try:
+                        target.HP -= (self.attack + random.randrange(-3, 3))
+                        if target.HP <= 0:
+                                for i in range(len(enemy.squad)):
+                                        if enemy.squad[i] == enemy.toons[target.name].name:
+                                                del enemy.squad[i]
+                                                break
+                except AttributeError:
+                        self.kick(self.target())
 
 class Monster1:
         def __init__(self, name):
                 self.name = name
                 self.level = 1
-                self.EXP_drop = 50 # variable or constant?
-                self.actions = ["Punch", "Kick"] # how to randomly select attacks? or do a pattern?
+                self.EXP_drop = 50
+                self.actions = ["Punch", "Kick"]
                 self.status = []
                 self.HP = 100
                 self.HP_max = self.HP
@@ -85,6 +112,26 @@ class Monster1:
                 self.attack = 4
                 self.defense = 3
                 self.speed = 100
+                self.ATB = 0
+        def fight(self):
+                choice = random.choice(self.actions)
+                target = random.choice(player.squad)
+                if choice == "Punch":
+                        print(self.name + " punch!")
+                        player.toons[target].HP -= self.punch()
+                        if player.toons[target].HP <= 0:
+                                for i in range(len(player.squad)):
+                                        if player.squad[i] == player.toons[target].name:
+                                                del player.squad[i]
+                                                break
+                elif choice == "Kick":
+                        print(self.name + " kick!")
+                        player.toons[target].HP -= self.kick()
+                        if player.toons[target].HP <= 0:
+                                for i in range(len(player.squad)):
+                                        if player.squad[i] == player.toons[target].name:
+                                                del player.squad[i]
+                                                break
         def punch(self):
                 return (self.attack + random.randrange(-1, 0))
         def kick(self):
@@ -96,10 +143,10 @@ def mainMenu(): #main menu
         print("Toons:", end=" ") 
         print(player.toons_list)
         print("Current Squad: "+str(player.squad))
-        print("Options: fight squad quit\n")
+        print("Options: Fight Squad Quit\n")
         menu = input().lower()
         if menu == "fight":
-                startBattle()
+                startBattle(2)
         elif menu == "squad":
                 squadManage()
         elif menu == "quit":
@@ -108,9 +155,9 @@ def mainMenu(): #main menu
                 print("Please select another option.")
                 mainMenu()
 
-def startBattle(): # TODO make this flow cleaner
+def startBattle(monsters): # TODO make this flow cleaner
         newWindow()
-        enemy.spawnMonsters(2) #spawns 2 monsters for testing
+        enemy.spawnMonsters(monsters) #spawns 2 monsters for testing
         while player.squad and enemy.squad:
                 battleRound()
         endBattle()
@@ -119,10 +166,12 @@ def endBattle():
         newWindow()
         print("Battle over!")
         enemy.clearSquad()
-        for i in player.squad:
-                player.toons[i].HP = player.toons[i].HP_max
+        for i in player.toons.values():
+                i.HP = i.HP_max
+                i.ATB = 0
         for i in enemy.toons.values():
                 i.HP = i.HP_max
+                i.ATB = 0
         mainMenu()
 
 def battleRound():
@@ -131,49 +180,23 @@ def battleRound():
                 endBattle()
         else:
                 for i in player.squad:
-                        print(player.toons[i].name + "   HP: " + str(player.toons[i].HP))
-                        print("Actions:")
-                        for j in range(len(player.toons[i].actions)):
-                                print(player.toons[i].actions[j], end=" ")
-                print("")
-                newWindow()
+                        player.toons[i].ATB += player.toons[i].speed
+                        if player.toons[i].ATB >= game.turn:
+                                battleInfo()
+                                player.toons[i].fight()
                 for i in enemy.squad:
-                        print(enemy.toons[i].name + "   HP: " + str(enemy.toons[i].HP))
-                choice = input()
-                if choice == "1":
-                        print(player.squad[0]+" punch!")
-                        time.sleep(1)
-                        enemy.toons[enemy.squad[0]].HP -= player.toons[player.squad[0]].punch()
-                        if enemy.toons[enemy.squad[0]].HP <= 0:
-                                del enemy.squad[0]
-                        if enemy.squad:
-                                player.toons[player.squad[0]].HP -= enemy.fight()
-                                if player.toons[player.squad[0]].HP <= 0:
-                                        del player.squad[0]
-                        battleRound()
-                elif choice == "2":
-                        print(player.squad[0]+" kick!")
-                        time.sleep(1)
-                        enemy.toons[enemy.squad[0]].HP -= player.toons[player.squad[0]].kick()
-                        if enemy.toons[enemy.squad[0]].HP <= 0:
-                                del enemy.squad[0]
-                        if enemy.squad:
-                                player.toons[player.squad[0]].HP -= enemy.fight()
-                                if player.toons[player.squad[0]].HP <= 0:
-                                        del player.squad[0]
-                        battleRound()
-                elif choice == "wait":
-                        player.toons[player.squad[0]].HP -= enemy.fight()
-                        if player.toons[player.squad[0]].HP <= 0:
-                                del player.squad[0]
-                        battleRound()
-                elif choice == "run":
-                        print("Running away...")
-                        time.sleep(2)
-                        endBattle()
-                else:
-                        print("Sorry, please choose another option: ")
-                        battleRound()
+                        enemy.toons[i].ATB += enemy.toons[i].speed
+                        if enemy.toons[i].ATB >= game.turn:
+                                battleInfo()
+                                enemy.toons[i].fight()
+
+def battleInfo():
+        for i in player.squad:
+                print(player.toons[i].name + "   HP: " + str(player.toons[i].HP))
+        newWindow()
+        for i in enemy.squad:
+                print(enemy.toons[i].name + "   HP: " + str(enemy.toons[i].HP))
+        newWindow()
 
 def squadManage(): #currently working as intended 5/25/19
         newWindow()
@@ -210,6 +233,7 @@ def createPlayer():
 def newWindow():
         print("-------------------")
 
+game = Game()
 enemy = EnemyPlayer()
 player = createPlayer()
 mainMenu()
